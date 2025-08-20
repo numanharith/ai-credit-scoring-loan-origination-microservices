@@ -1,0 +1,22 @@
+# services/loan-api/src/main/resources/application-dev.yml
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 5  # Smaller pool for dev
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop  # Recreate schema in dev
+
+logging:
+  level:
+    root: INFO
+    com.portfolio: DEBUG
+    org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # All endpoints in dev

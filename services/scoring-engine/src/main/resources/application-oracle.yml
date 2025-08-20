@@ -1,0 +1,30 @@
+# application-oracle.yml (in each service)
+spring:
+  # Oracle-specific optimizations
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1 FROM DUAL
+      data-source-properties:
+        oracle.jdbc.ReadTimeout: 60000
+        oracle.net.CONNECT_TIMEOUT: 10000
+        oracle.jdbc.implicitStatementCacheSize: 25
+        oracle.jdbc.defaultRowPrefetch: 100
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle12cDialect
+        globally_quoted_identifiers: false
+        globally_quoted_identifiers_skip_column_definitions: true
+
+# Oracle-specific monitoring
+oracle:
+  cloud:
+    wallet-location: ${ORACLE_WALLET_PATH:./oracle-wallet}
+    service-name: ${ORACLE_SERVICE_NAME:}
+  monitoring:
+    enabled: true
+    metrics:
+      - Database CPU Time Ratio
+      - Database Wait Time Ratio
+      - Executions Per Sec

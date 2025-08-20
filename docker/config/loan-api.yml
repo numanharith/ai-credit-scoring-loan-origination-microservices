@@ -1,0 +1,17 @@
+# docker/config/loan-api.yml
+# External configuration for containerized deployment
+spring:
+  profiles:
+    active: docker,oracle
+
+  datasource:
+    url: jdbc:oracle:thin:@creditloanorigination_high?TNS_ADMIN=/opt/oracle/wallet
+    hikari:
+      maximum-pool-size: 8
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO

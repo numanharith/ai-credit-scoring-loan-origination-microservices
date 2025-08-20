@@ -1,0 +1,62 @@
+# shared/common-config/src/main/resources/application-common.yml
+# Common configurations shared across all services
+
+spring:
+  application:
+    name: ${SERVICE_NAME:credit-scoring-service}
+
+  # Common Oracle configuration
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      leak-detection-threshold: 60000
+      connection-timeout: 30000
+      validation-timeout: 5000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+# Common Kafka configuration
+kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  consumer:
+    group-id: ${spring.application.name}
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Common logging
+logging:
+  level:
+    com.portfolio: INFO
+    org.springframework.kafka: WARN
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Common management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true

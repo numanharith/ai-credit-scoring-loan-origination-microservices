@@ -1,0 +1,53 @@
+# services/scoring-engine/src/main/resources/application.yml
+spring:
+  profiles:
+    include: common,oracle
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  application:
+    name: scoring-engine-service
+
+  # Different database connection pool for batch processing
+  datasource:
+    url: jdbc:oracle:thin:@creditloanorigination_high?TNS_ADMIN=${ORACLE_WALLET_PATH:./oracle-wallet}
+    username: ${ORACLE_USERNAME:}
+    password: ${ORACLE_PASSWORD}
+    hikari:
+      maximum-pool-size: 15  # Higher for AI processing
+      minimum-idle: 8
+
+# AI/Ollama specific configuration
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        model: ${OLLAMA_MODEL:llama2:7b}
+        options:
+          temperature: 0.1  # Low temperature for consistent scoring
+
+server:
+  port: ${SERVER_PORT:8081}
+
+# Scoring-specific Kafka configuration
+scoring:
+  kafka:
+    topics:
+      input: loan-applications
+      output: credit-scores
+      errors: scoring-errors
+  batch-size: 10
+  processing-timeout: 30s
+
+# Circuit breaker for AI service
+resilience4j:
+  circuitbreaker:
+    instances:
+      ollama:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+
+logging:
+  level:
+    com.portfolio.scoring: DEBUG
+    org.springframework.ai: DEBUG

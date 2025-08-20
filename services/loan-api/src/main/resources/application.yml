@@ -1,0 +1,50 @@
+# services/loan-api/src/main/resources/application.yml
+spring:
+  profiles:
+    include: common,oracle  # Include shared configs
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  application:
+    name: loan-api-service
+
+  # Service-specific database connection
+  datasource:
+    url: jdbc:oracle:thin:@creditloanorigination_high?TNS_ADMIN=${ORACLE_WALLET_PATH:./oracle-wallet}
+    username: ${ORACLE_USERNAME:}
+    password: ${ORACLE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10  # API service needs more connections
+      minimum-idle: 5
+
+  # Service-specific JPA settings
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+# Service-specific server configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api/v1
+
+# Service-specific Kafka topics
+loan:
+  kafka:
+    topics:
+      applications: loan-applications
+      notifications: loan-notifications
+
+# API rate limiting
+resilience4j:
+  ratelimiter:
+    instances:
+      loan-api:
+        limit-for-period: 100
+        limit-refresh-period: 1m
+        timeout-duration: 5s
+
+logging:
+  level:
+    com.portfolio.loanapi: DEBUG
+    org.hibernate.SQL: WARN
