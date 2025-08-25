@@ -10,8 +10,8 @@ spring:
   # Service-specific database connection
   datasource:
     url: jdbc:oracle:thin:@creditloanorigination_high?TNS_ADMIN=${ORACLE_WALLET_PATH:./oracle-wallet}
-    username: ${ORACLE_USERNAME:}
-    password: ${ORACLE_PASSWORD}
+    username: ${ORACLE_SERVICE_NAME:}
+    password: ${ORACLE_PASSWORD:}
     hikari:
       maximum-pool-size: 10  # API service needs more connections
       minimum-idle: 5
